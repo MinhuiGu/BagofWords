@@ -4,11 +4,14 @@ import numpy as np
 from scipy import cluster
 import scipy
 
+
+# get euclidean distance of two ndarray
 def dist(u,v):
     return scipy.spatial.distance.euclidean(u, v)
 
+# binning the imput image into the codebook
+#  Problem: can only return the index of the codebook and it cannot visualize the outcome
 def hard_quatization(path,book):
-
     img = cv2.imread(path,cv2.IMREAD_COLOR)
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     kp, des = cv2.SIFT().detectAndCompute(gray,None)
@@ -26,7 +29,8 @@ def hard_quatization(path,book):
                 shortest = i
         adict[shortest] += 1
     return adict 
-                
+ 
+# generate the bag of words for a folder of pictures               
 def codeword( db_path,K, save = True):
     des_pool = np.zeros((0,128))
     kp = []
