@@ -85,6 +85,7 @@ def quatization(image, code_book, soft=False):
      
     else:     
         sum_k_ri = {}
+        
         for i in range(0, len(code_book)):
             s = 0
             for j in des:
@@ -125,7 +126,6 @@ def code_book(folder_path, K, save=True, read_from_txt = False):
     kp = []
     if read_from_txt is True:
         nd = np.loadtxt('word.txt')
-        
     else:
         for each_img in os.listdir(folder_path):
             image_path = folder_path + each_img
