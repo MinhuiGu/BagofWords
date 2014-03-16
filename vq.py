@@ -1,13 +1,13 @@
 import cv2
 import os
 import numpy as np
-from scipy import cluster,stats,spatial
-from math import sqrt,pi,exp
+from scipy import cluster, stats, spatial
+from math import sqrt, pi, exp
 
 
 def __dist(u, v):
     """
-    Get euclidean distance of two ndarray.from vq import *
+    Get euclidean distance of two ndarray.
 
     Parameters
     ----------
@@ -21,16 +21,21 @@ def __dist(u, v):
     
     
 def __guassian_kernel(x, sigma=110):
-    return (1/(sqrt(2.*pi) * sigma)) * exp(-x ** 2 / (2.*sigma**2))
+    """
+    
+    """
+    return (1 / (sqrt(2.*pi) * sigma)) * exp(-x ** 2 / (2.*sigma**2))
     
     
 def __sift_dect_and_compute(image):
     """
     Extract features and computes their descriptors using SIFT algorithm.
+    
 
     Parameters
     ----------
     image: the absolute path of image file
+    
 
     Returns
     -------
@@ -52,6 +57,8 @@ def quatization(image, code_book, soft=False):
     ----------
     image: the absolute path of image file
     code_book: numpy ndarray
+    soft: the flag for the type of quatization. If true, we will use soft 
+          quatization. The default one is hard quatization.
 
     Returns
     -------
