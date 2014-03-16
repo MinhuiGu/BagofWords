@@ -9,16 +9,6 @@ def __dist(u, v):
     """
     Get euclidean distance of two ndarray.from vq import *
 
-if __name__ == '__main__':
-    train_path = "./Graz02TranValidationTest/Test/test/"
-    K = 10
-    my_code_book = code_book(train_path, K)
-    #printmy_code_book
-    test_path = "./Graz02TranValidationTest/Test/test/bike_166.bmp"
-    hist = hard_quatization(test_path, my_code_book)
-    print hist
-
-
     Parameters
     ----------
     u, v : numpy ndarray
@@ -30,8 +20,8 @@ if __name__ == '__main__':
     return spatial.distance.euclidean(u, v)
     
     
-def __guassian_kernel(x,sigma=110):
-    return (1/(sqrt(2.*pi)*sigma)) * exp(-x**2/(2.*sigma**2))
+def __guassian_kernel(x, sigma=110):
+    return (1/(sqrt(2.*pi) * sigma)) * exp(-x ** 2 / (2.*sigma**2))
     
     
 def __sift_dect_and_compute(image):
@@ -52,7 +42,7 @@ def __sift_dect_and_compute(image):
     kp, des = cv2.SIFT().detectAndCompute(gray, None)
     return kp, des
 
-def quatization(image, code_book,soft=False):
+def quatization(image, code_book, soft=False):
     """
     Do hard quatization by assign codes from a code book to target image
     that computes the euclidian distance between image and every frame
@@ -70,7 +60,7 @@ def quatization(image, code_book,soft=False):
     kp, des = __sift_dect_and_compute(image)
     adict = {}
     shortest = []
-    for i in range(0,len(code_book)):
+    for i in range(0, len(code_book)):
         adict[i] = 0
                 
     if soft is False:   
@@ -83,22 +73,22 @@ def quatization(image, code_book,soft=False):
                     shortest = i
             adict[shortest] += 1
             
-        for i in range(0,len(code_book)):
-            adict[i] = float(adict[i] )/len(code_book)  
+        for i in range(0, len(code_book)):
+            adict[i] = float(adict[i] ) / len(code_book)  
      
     else:     
         sum_k_ri = {}
-        for i in range(0,len(code_book)):
+        for i in range(0, len(code_book)):
             s = 0
             for j in des:
-                s += __guassian_kernel(__dist(i,j))
+                s += __guassian_kernel(__dist(i, j))
             sum_k_ri[i] = s
             print sum_k_ri[i]
         
-        for i in range(0,len(code_book)):
-            for j in range(0,len(book)):
-                adict[i] += __guassian_kernel(__dist(code_book[j],code_book[i]))/(len(code_book)*sum_k_ri[i]) 
-            adict[i] = float(adict[i] )/len(code_book) 
+        for i in range(0, len(code_book)):
+            for j in range(0, len(book)):
+                adict[i] += __guassian_kernel(__dist(code_book[j], code_book[i])) / (len(code_book)*sum_k_ri[i]) 
+            adict[i] = float(adict[i]) / len(code_book) 
                                         
     return adict                    
     
@@ -113,8 +103,8 @@ def code_book(folder_path, K, save=True, read_from_txt = False):
     images
 
     k: int or ndarray
-        The number of clusters to form as well as the number of
-        centroids to generate.
+       The number of clusters to form as well as the number of
+       centroids to generate.
 
     save: The flag for saving the result code book.
 
