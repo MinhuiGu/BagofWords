@@ -1,13 +1,23 @@
 import cv2
 import os
 import numpy as np
-from scipy import cluster
-import scipy
+from scipy import cluster,stats,spatial
+from math import sqrt,pi,exp
 
 
 def __dist(u, v):
     """
-    Get euclidean distance of two ndarray.
+    Get euclidean distance of two ndarray.from vq import *
+
+if __name__ == '__main__':
+    train_path = "./Graz02TranValidationTest/Test/test/"
+    K = 10
+    my_code_book = code_book(train_path, K)
+    #printmy_code_book
+    test_path = "./Graz02TranValidationTest/Test/test/bike_166.bmp"
+    hist = hard_quatization(test_path, my_code_book)
+    print hist
+
 
     Parameters
     ----------
@@ -17,8 +27,13 @@ def __dist(u, v):
     -------
     The distance calculated by scipy.
     """
-    return scipy.spatial.distance.euclidean(u, v)
-
+    return spatial.distance.euclidean(u, v)
+    
+    
+def __guassian_kernel(x,sigma=110):
+    return (1/(sqrt(2.*pi)*sigma)) * exp(-x**2/(2.*sigma**2))
+    
+    
 def __sift_dect_and_compute(image):
     """
     Extract features and computes their descriptors using SIFT algorithm.
@@ -37,7 +52,7 @@ def __sift_dect_and_compute(image):
     kp, des = cv2.SIFT().detectAndCompute(gray, None)
     return kp, des
 
-def hard_quatization(image, code_book):
+def quatization(image, code_book,soft=False):
     """
     Do hard quatization by assign codes from a code book to target image
     that computes the euclidian distance between image and every frame
@@ -55,20 +70,40 @@ def hard_quatization(image, code_book):
     kp, des = __sift_dect_and_compute(image)
     adict = {}
     shortest = []
-    for i in range(0, len(code_book)):
+    for i in range(0,len(code_book)):
         adict[i] = 0
+                
+    if soft is False:   
+        for p in des:
+            mini = 0
+            for i in range(0, len(code_book)):
+                t = __dist(code_book[i], p)
+                if mini == 0 or t < mini:
+                    mini = t
+                    shortest = i
+            adict[shortest] += 1
+            
+        for i in range(0,len(code_book)):
+            adict[i] = float(adict[i] )/len(code_book)  
+     
+    else:     
+        sum_k_ri = {}
+        for i in range(0,len(code_book)):
+            s = 0
+            for j in des:
+                s += __guassian_kernel(__dist(i,j))
+            sum_k_ri[i] = s
+            print sum_k_ri[i]
+        
+        for i in range(0,len(code_book)):
+            for j in range(0,len(book)):
+                adict[i] += __guassian_kernel(__dist(code_book[j],code_book[i]))/(len(code_book)*sum_k_ri[i]) 
+            adict[i] = float(adict[i] )/len(code_book) 
+                                        
+    return adict                    
+    
 
-    for p in des:
-        mini = 0
-        for i in range(0, len(code_book)):
-            t = __dist(code_book[i], p)
-            if mini == 0 or t < mini:
-                mini = t
-                shortest = i
-        adict[shortest] += 1
-    return adict
-
-def code_book(folder_path, K, save=True):
+def code_book(folder_path, K, save=True, read_from_txt = False):
     """
     Generate the bag of words for a folder of pictures.
 
@@ -91,11 +126,17 @@ def code_book(folder_path, K, save=True):
     """
     des_pool = np.zeros((0, 128))
     kp = []
-    for each_img in os.listdir(folder_path):
-        image_path = folder_path + each_img
-        kp, des = __sift_dect_and_compute(image_path)
-        des_pool = np.concatenate((des_pool, des))
-    nd, p = cluster.vq.kmeans2(des_pool, K)
-    if save:
-        np.savetxt('word.txt', nd)
+    if read_from_txt is True:
+        nd = np.loadtxt('word.txt')
+        
+    else:
+        for each_img in os.listdir(folder_path):
+            image_path = folder_path + each_img
+            print "processing: ", image_path
+            kp, des = __sift_dect_and_compute(image_path)
+            des_pool = np.concatenate((des_pool, des))
+        nd, p = cluster.vq.kmeans2(des_pool, K)
+        if save:
+            print "saving codebook to word.txt"
+            np.savetxt('word.txt', nd)
     return nd
