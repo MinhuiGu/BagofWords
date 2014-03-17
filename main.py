@@ -42,5 +42,5 @@ if __name__ == '__main__':
         K = int(K)
 
     my_code_book = code_book(options.folder_path, K, read_from_txt=read)
-    hist = hard_quatization(options.filename, my_code_book, soft=soft)
+    hist = quatization(options.filename, my_code_book, soft=soft)
     print hist
