@@ -22,7 +22,16 @@ def __dist(u, v):
     
 def __guassian_kernel(x, sigma=110):
     """
-    
+    Gaussian kernel density estimation
+
+    Parameters
+    ----------
+    x: the distance
+    sigma: given sigma value
+
+    Returns
+    -------
+    Estimation value of the give x and sigma
     """
     return (1 / (sqrt(2.*pi) * sigma)) * exp(-x ** 2 / (2.*sigma**2))
     
@@ -62,7 +71,7 @@ def quatization(image, code_book, soft=False):
 
     Returns
     -------
-    adict:
+    adict: the frequency histogram of the representation of bag of words
     """
     kp, des = __sift_dect_and_compute(image)
     adict = {}
@@ -79,25 +88,20 @@ def quatization(image, code_book, soft=False):
                     mini = t
                     shortest = i
             adict[shortest] += 1
-            
-        for i in range(0, len(code_book)):
-            adict[i] = float(adict[i] ) / len(code_book)  
-     
+
     else:     
-        sum_k_ri = {}
+      sum_k_ri = {}
         
-        for i in range(0, len(code_book)):
-            s = 0
-            for j in des:
-                s += __guassian_kernel(__dist(i, j))
+    for i in range(0, len(code_book)):
+        s = 0
+        for j in range(0, len(code_book)):
+            s += __guassian_kernel(__dist(code_book[i], code_book[j]))
             sum_k_ri[i] = s
-            print sum_k_ri[i]
         
         for i in range(0, len(code_book)):
-            for j in range(0, len(book)):
-                adict[i] += __guassian_kernel(__dist(code_book[j], code_book[i])) / (len(code_book)*sum_k_ri[i]) 
-            adict[i] = float(adict[i]) / len(code_book) 
-                                        
+            for j in des:
+                adict[i] += __guassian_kernel(__dist(j, code_book[i])) / (sum_k_ri[i]) 
+                       
     return adict                    
     
 
@@ -127,12 +131,17 @@ def code_book(folder_path, K, save=True, read_from_txt = False):
     if read_from_txt is True:
         nd = np.loadtxt('word.txt')
     else:
-        for each_img in os.listdir(folder_path):
+       for each_img in os.listdir(folder_path):
             image_path = folder_path + each_img
-            print "processing: ", image_path
             kp, des = __sift_dect_and_compute(image_path)
+            print image_path, "--> SIFT feature number: ", len(kp)
             des_pool = np.concatenate((des_pool, des))
+            
+        print "Pool shape: ", des_pool.shape
+        
+        print " Clustering... ", " K = ", K
         nd, p = cluster.vq.kmeans2(des_pool, K)
+
         if save:
             print "saving codebook to word.txt"
             np.savetxt('word.txt', nd)
