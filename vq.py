@@ -131,15 +131,14 @@ def code_book(folder_path, K, save=True, read_from_txt = False):
     if read_from_txt is True:
         nd = np.loadtxt('word.txt')
     else:
-       for each_img in os.listdir(folder_path):
+        for each_img in os.listdir(folder_path):
             image_path = folder_path + each_img
             kp, des = __sift_dect_and_compute(image_path)
             print image_path, "--> SIFT feature number: ", len(kp)
             des_pool = np.concatenate((des_pool, des))
-            
-        print "Pool shape: ", des_pool.shape
-        
-        print " Clustering... ", " K = ", K
+        print "Pool shape: "
+        print des_pool.shape
+        print "Clustering... ", "K = ",K
         nd, p = cluster.vq.kmeans2(des_pool, K)
 
         if save:
