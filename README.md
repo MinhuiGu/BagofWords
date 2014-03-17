@@ -24,7 +24,5 @@ Install dependecies first. (OpenCV-Python, Scipy, Numpy)
   Usage: main.py [options]
   Options:
     -h, --help            show this help message and exit
-    -s FOLDER_PATH, --source=FOLDER_PATH
-                          the path of folder that contains images file.
-    -f FILENAME, --file=FILENAME
-                          the target image file.
+    -s FOLDER_PATH, --source=FOLDER_PATH the path of folder that contains images file.
+    -f FILENAME, --file=FILENAME the target image file.
