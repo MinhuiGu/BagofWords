@@ -20,7 +20,7 @@ def __dist(u, v):
     return spatial.distance.euclidean(u, v)
     
     
-def __guassian_kernel(x, sigma=110):
+def __guassian_kernel(x, sigma=200):
     """
     Gaussian kernel density estimation
 
@@ -74,6 +74,7 @@ def quatization(image, code_book, soft=False):
     adict: the frequency histogram of the representation of bag of words
     """
     kp, des = __sift_dect_and_compute(image)
+    print image, "--> SIFT feature number: ", len(kp)
     adict = {}
     shortest = []
     for i in range(0, len(code_book)):
@@ -90,14 +91,14 @@ def quatization(image, code_book, soft=False):
             adict[shortest] += 1
 
     else:     
-      sum_k_ri = {}
+        sum_k_ri = {}
         
-    for i in range(0, len(code_book)):
-        s = 0
-        for j in range(0, len(code_book)):
-            s += __guassian_kernel(__dist(code_book[i], code_book[j]))
-            sum_k_ri[i] = s
-        
+        for i in range(0, len(code_book)):
+            s = 0
+            for j in range(0, len(code_book)):
+                s += __guassian_kernel(__dist(code_book[i], code_book[j]))
+                sum_k_ri[i] = s
+            
         for i in range(0, len(code_book)):
             for j in des:
                 adict[i] += __guassian_kernel(__dist(j, code_book[i])) / (sum_k_ri[i]) 
